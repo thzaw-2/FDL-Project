@@ -10,7 +10,7 @@ from aiogram.enums import ParseMode
 from pyrogram.enums import ParseMode as SmartParseMode
 from pyrogram.types import Message as SmartMessage
 from pyrogram.enums import ChatMemberStatus
-from .. import SmartPyro, bot, dp
+from bot import SmartPyro, bot, dp
 from bot.helpers.utils import new_task
 from bot.helpers.botutils import send_message, delete_messages
 from bot.helpers.commands import BotCommands
