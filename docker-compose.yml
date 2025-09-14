@@ -1,9 +1,10 @@
+# docker-compose.yml
 version: '3.8'
 
 services:
-  bot:
+  telegram-bot:
     build: .
     restart: unless-stopped
     env_file:
       - .env
-    command: python3 bot/bot.py
+       command: python3 bot/bot.py
