@@ -14,20 +14,28 @@ API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 LOG_CHANNEL_ID = int(os.environ.get("LOG_CHANNEL_ID"))
 
-# Initialize Pyrogram client
-try:
-    SmartPyro = Client(
-        "SmartUtilBot",
-        api_id=API_ID,
-        api_hash=API_HASH,
-        bot_token=BOT_TOKEN
-    )
-except Exception as e:
-    print(f"Error initializing Pyrogram client: {e}")
-    exit(1)
+# Pyrogram client ကို globa အနေနဲ့ထားပါ
+SmartPyro = Client(
+    "SmartUtilBot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN
+)
 
 # Initialize Flask app
 app = Flask(__name__)
+
+# Flask application context မှာ Pyrogram client ကို run ဖို့အတွက်
+@app.before_first_request
+def start_pyrogram():
+    SmartPyro.start()
+
+# Flask application context ကနေထွက်ရင် Pyrogram client ကိုရပ်ဖို့အတွက်
+@app.teardown_appcontext
+def stop_pyrogram(error):
+    if error:
+        print(f"Flask app context error: {error}")
+    SmartPyro.stop()
 
 # Function to get file details
 async def get_file_details(message_id: int):
@@ -36,9 +44,9 @@ async def get_file_details(message_id: int):
         if not msg or not msg.media:
             return None, None, None
         
-        file_name = getattr(msg, 'file_name', f"file-{message_id}.mp4")
-        file_size = msg.file_size
-        mime_type = msg.mime_type
+        file_name = getattr(msg.media, 'file_name', f"file-{message_id}.mp4")
+        file_size = msg.media.file_size
+        mime_type = getattr(msg.media, 'mime_type', 'application/octet-stream')
         
         return file_name, file_size, mime_type
     except Exception as e:
@@ -46,9 +54,18 @@ async def get_file_details(message_id: int):
         return None, None, None
 
 @app.route("/dl/<int:message_id>")
-async def download_file(message_id):
+def download_file(message_id):
+    # This needs to be a synchronous function for Flask
+    # We will run the async part inside a loop
     try:
-        # Check code
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(handle_download(message_id))
+    except Exception as e:
+        print(f"Error in download_file: {e}")
+        return "Internal Server Error", 500
+
+async def handle_download(message_id):
+    try:
         code = request.args.get('code')
         if not code:
             return "Unauthorized", 401
@@ -64,7 +81,6 @@ async def download_file(message_id):
         file_name = getattr(msg.media, 'file_name', f"file_{message_id}.mp4")
         mime_type = getattr(msg.media, 'mime_type', 'application/octet-stream')
 
-        # Get file stream
         def generate():
             stream = SmartPyro.stream_media(msg)
             while True:
@@ -83,13 +99,21 @@ async def download_file(message_id):
         return Response(generate(), headers=headers)
 
     except Exception as e:
-        print(f"Error in download_file: {e}")
+        print(f"Error in handle_download: {e}")
         return "Internal Server Error", 500
 
 @app.route("/stream/<int:message_id>")
-async def stream_file(message_id):
+def stream_file(message_id):
+    # This also needs to be a synchronous function
     try:
-        # Check code
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(handle_stream(message_id))
+    except Exception as e:
+        print(f"Error in stream_file: {e}")
+        return "Internal Server Error", 500
+
+async def handle_stream(message_id):
+    try:
         code = request.args.get('code')
         if not code:
             return "Unauthorized", 401
@@ -147,14 +171,8 @@ async def stream_file(message_id):
     except FileIdInvalid:
         return "File Not Found", 404
     except Exception as e:
-        print(f"Error in stream_file: {e}")
+        print(f"Error in handle_stream: {e}")
         return "Internal Server Error", 500
 
-async def run_pyrogram():
-    async with SmartPyro:
-        # app.run(host='0.0.0.0', port=os.environ.get("PORT", 5000))
-        # This part is for local testing. We'll use gunicorn for production.
-        pass
-
 if __name__ == "__main__":
-    asyncio.run(run_pyrogram())
+    app.run(debug=True)
