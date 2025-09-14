@@ -3,10 +3,11 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.enums import ParseMode
-from bot import dp
-from bot.helpers.utils import new_task
-from bot.helpers.botutils import send_message
-from bot.helpers.commands import BotCommands
+# ဒီ line ကို ပြင်ပါ
+from .. import dp
+from .helpers.utils import new_task
+from .helpers.botutils import send_message
+from .helpers.commands import BotCommands
 from config import ADMINS
 
 router = Router()
