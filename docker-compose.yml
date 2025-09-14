@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  api-server:
+  bot:
     build: .
     restart: unless-stopped
     env_file:
       - .env
-    command: gunicorn --bind 0.0.0.0:$PORT api_server.app:app
+    command: python3 bot/bot.py
