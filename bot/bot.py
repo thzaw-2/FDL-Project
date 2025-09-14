@@ -5,9 +5,11 @@ from pyrogram import Client
 from .helpers.logger import LOGGER
 from . import fdl
 from . import status
+from .__init__ import SmartPyro, bot, dp  # Modified this line
 
 LOGGER.info("Starting bot...")
 
+# Get credentials from environment variables
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
