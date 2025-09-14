@@ -10,14 +10,14 @@ from aiogram.enums import ParseMode
 from pyrogram.enums import ParseMode as SmartParseMode
 from pyrogram.types import Message as SmartMessage
 from pyrogram.enums import ChatMemberStatus
-from bot import SmartPyro, bot, dp
-from bot.helpers.utils import new_task
-from bot.helpers.botutils import send_message, delete_messages
-from bot.helpers.commands import BotCommands
-from bot.helpers.logger import LOGGER
-from bot.helpers.notify import Smart_Notify
-from bot.helpers.buttons import SmartButtons
-from bot.helpers.defend import SmartDefender
+from .. import SmartPyro, bot, dp
+from .helpers.utils import new_task
+from .helpers.botutils import send_message, delete_messages
+from .helpers.commands import BotCommands
+from .helpers.logger import LOGGER
+from .helpers.notify import Smart_Notify
+from .helpers.buttons import SmartButtons
+from .helpers.defend import SmartDefender
 from config import LOG_CHANNEL_ID
 
 logger = LOGGER
