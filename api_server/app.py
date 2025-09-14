@@ -14,23 +14,24 @@ API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 LOG_CHANNEL_ID = int(os.environ.get("LOG_CHANNEL_ID"))
 
-# Pyrogram client ကို globa အနေနဲ့ထားပါ
+# Pyrogram client ကို global အနေနဲ့ထားပါ
 SmartPyro = Client(
     "SmartUtilBot",
     api_id=API_ID,
     api_hash=API_HASH,
-    bot_token=BOT_TOKEN
+    bot_token=BOT_TOKEN,
+    no_updates=True
 )
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Flask application context မှာ Pyrogram client ကို run ဖို့အတွက်
+# gunicorn က worker တစ်ခုစီအတွက် သီးခြား thread ကိုသုံးတဲ့အတွက် ဒီနည်းလမ်းက ပိုကောင်းပါတယ်
 @app.before_first_request
 def start_pyrogram():
     SmartPyro.start()
 
-# Flask application context ကနေထွက်ရင် Pyrogram client ကိုရပ်ဖို့အတွက်
 @app.teardown_appcontext
 def stop_pyrogram(error):
     if error:
@@ -55,14 +56,9 @@ async def get_file_details(message_id: int):
 
 @app.route("/dl/<int:message_id>")
 def download_file(message_id):
-    # This needs to be a synchronous function for Flask
-    # We will run the async part inside a loop
-    try:
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(handle_download(message_id))
-    except Exception as e:
-        print(f"Error in download_file: {e}")
-        return "Internal Server Error", 500
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(handle_download(message_id))
 
 async def handle_download(message_id):
     try:
@@ -104,13 +100,9 @@ async def handle_download(message_id):
 
 @app.route("/stream/<int:message_id>")
 def stream_file(message_id):
-    # This also needs to be a synchronous function
-    try:
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(handle_stream(message_id))
-    except Exception as e:
-        print(f"Error in stream_file: {e}")
-        return "Internal Server Error", 500
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(handle_stream(message_id))
 
 async def handle_stream(message_id):
     try:
