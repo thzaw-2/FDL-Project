@@ -1,0 +1,6 @@
+{
+  "build": {
+    "builder": "Nixpacks",
+    "rootDirectory": "api_server"
+  }
+}

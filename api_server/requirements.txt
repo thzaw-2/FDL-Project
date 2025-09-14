@@ -1,0 +1,4 @@
+Flask==3.0.0
+pyrogram
+gunicorn==22.0.0
+TgCrypto
