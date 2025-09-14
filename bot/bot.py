@@ -5,7 +5,6 @@ from pyrogram import Client
 from .helpers.logger import LOGGER
 from . import fdl
 from . import status
-from .__init__ import SmartPyro, bot, dp  # Modified this line
 
 LOGGER.info("Starting bot...")
 
