@@ -1,4 +1,3 @@
-# fdl.py
 import asyncio
 import secrets
 import urllib.parse
@@ -83,26 +82,33 @@ async def format_file_size(file_size: int) -> str:
 
 async def handle_file_download(message: Message, bot: Bot):
     user_id = message.from_user.id if message.from_user else None
-    if not message.reply_to_message:
+    
+    if message.reply_to_message:
+        target_message = message.reply_to_message
+    elif message.forward_from_chat or message.forward_from:
+        target_message = message
+    else:
         await send_message(
             chat_id=message.chat.id,
-            text="<b>Please Reply To File For Link</b>",
+            text="<b>Please Reply To A File Or Forward A File To Get Link</b>",
             parse_mode=ParseMode.HTML
         )
         return
-    reply_message = message.reply_to_message
-    if not (reply_message.document or reply_message.video or reply_message.photo or reply_message.audio or reply_message.video_note):
+        
+    if not (target_message.document or target_message.video or target_message.photo or target_message.audio or target_message.video_note):
         await send_message(
             chat_id=message.chat.id,
-            text="<b>Please Reply To A Valid File</b>",
+            text="<b>Please Reply To Or Forward A Valid File</b>",
             parse_mode=ParseMode.HTML
         )
         return
+    
     processing_msg = await send_message(
         chat_id=message.chat.id,
         text="<b>Processing Your File.....</b>",
         parse_mode=ParseMode.HTML
     )
+    
     try:
         bot_member = await SmartPyro.get_chat_member(LOG_CHANNEL_ID, "me")
         if bot_member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
@@ -111,21 +117,23 @@ async def handle_file_download(message: Message, bot: Bot):
                 parse_mode=ParseMode.HTML
             )
             return
+
         code = secrets.token_urlsafe(6)[:6]
-        file_name, file_size, mime_type = await get_file_properties(reply_message)
+        file_name, file_size, mime_type = await get_file_properties(target_message)
+        
         file_id = None
-        if message.chat.id == LOG_CHANNEL_ID:
-            file_id = reply_message.message_id
+        if target_message.chat.id == LOG_CHANNEL_ID:
+            file_id = target_message.message_id
             sent = await SmartPyro.copy_message(
                 chat_id=LOG_CHANNEL_ID,
                 from_chat_id=LOG_CHANNEL_ID,
-                message_id=reply_message.message_id,
+                message_id=target_message.message_id,
                 caption=code,
                 parse_mode=SmartParseMode.HTML
             )
             file_id = sent.id
         else:
-            sent = await reply_message.forward(LOG_CHANNEL_ID)
+            sent = await target_message.forward(LOG_CHANNEL_ID)
             file_id = sent.message_id
             sent = await SmartPyro.copy_message(
                 chat_id=LOG_CHANNEL_ID,
@@ -135,10 +143,11 @@ async def handle_file_download(message: Message, bot: Bot):
                 parse_mode=SmartParseMode.HTML
             )
             file_id = sent.id
+
         quoted_code = urllib.parse.quote(code)
         base_url = BASE_URL.rstrip('/')
         download_link = f"{base_url}/dl/{file_id}?code={quoted_code}"
-        is_video = mime_type.startswith('video') or reply_message.video or reply_message.video_note
+        is_video = mime_type.startswith('video') or target_message.video or target_message.video_note
         stream_link = f"{base_url}/stream/{file_id}?code={quoted_code}" if is_video else None
        
         smart_buttons = SmartButtons()
@@ -163,6 +172,7 @@ async def handle_file_download(message: Message, bot: Bot):
             disable_web_page_preview=True
         )
         logger.info(f"Generated links for file_id: {file_id}, download: {download_link}, stream: {stream_link}")
+
     except Exception as e:
         logger.error(f"Error generating links for file_id: {file_id if 'file_id' in locals() else 'unknown'}, error: {str(e)}")
         await Smart_Notify(bot, f"{BotCommands}fdl", e, processing_msg)
