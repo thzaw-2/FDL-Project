@@ -3,8 +3,7 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.enums import ParseMode
-# ဒီ line ကို ပြင်ပါ
-from .. import dp
+from . import dp
 from .helpers.utils import new_task
 from .helpers.botutils import send_message
 from .helpers.commands import BotCommands
