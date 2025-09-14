@@ -3,3 +3,5 @@ pyrogram
 aiofiles==23.1.0
 aiohttp==3.8.5
 TgCrypto
+Flask==3.0.0
+gunicorn==22.0.0
