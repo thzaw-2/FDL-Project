@@ -1,5 +1,4 @@
-# requirements.txt
 aiogram==3.1.1
-pyrogram==2.1.25
+pyrogram
 aiofiles==23.2.1
 aiohttp==3.9.0
