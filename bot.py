@@ -3,8 +3,8 @@ import os
 from aiogram import Bot, Dispatcher
 from pyrogram import Client
 from bot.helpers.logger import LOGGER
-from bot import fdl
-from bot import status
+import fdl
+import status
 
 LOGGER.info("Starting bot...")
 
