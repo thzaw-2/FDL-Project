@@ -1,4 +1,3 @@
-# bot/helpers/botutils.py
 import asyncio
 from typing import Union
 from aiogram import Bot
