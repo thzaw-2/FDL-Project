@@ -2,13 +2,12 @@ import asyncio
 import os
 from aiogram import Bot, Dispatcher
 from pyrogram import Client
-from .helpers.logger import LOGGER
-from . import fdl
-from . import status
+from bot.helpers.logger import LOGGER
+from bot import fdl
+from bot import status
 
 LOGGER.info("Starting bot...")
 
-# Get credentials from environment variables
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -27,7 +26,7 @@ try:
     dp.include_router(fdl.router)
     dp.include_router(status.router)
 except Exception as e:
-    LOGGER.error(f"Error initializing bot: {e}")
+    LOGGER.error(f"Error initializing bot: {e}", exc_info=True)  # အသေးစိတ် log ကိုပြပေးပါ
     exit(1)
 
 async def main():
@@ -35,7 +34,7 @@ async def main():
         await SmartPyro.start()
         await dp.start_polling(bot)
     except Exception as e:
-        LOGGER.error(f"Error in main polling loop: {e}")
+        LOGGER.error(f"Error in main polling loop: {e}", exc_info=True) # အသေးစိတ် log ကိုပြပေးပါ
     finally:
         await SmartPyro.stop()
 
