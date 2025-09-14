@@ -1,0 +1,9 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  telegram-bot:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
