@@ -38,4 +38,4 @@ async def status_command(message: Message):
         chat_id=message.chat.id,
         text=f"<b>Current bot status: {current_status.upper()}</b>\n\nUse /status on or /status off to change.",
         parse_mode=ParseMode.HTML
-    )  
+    )
