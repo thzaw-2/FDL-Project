@@ -1,4 +1,3 @@
-# bot/helpers/utils.py
 import asyncio
 import functools
 import threading
