@@ -1,4 +1,3 @@
-# bot/helpers/notify.py
 import traceback
 import sys
 from aiogram import Bot
