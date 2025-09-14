@@ -2,9 +2,9 @@ import asyncio
 import os
 from aiogram import Bot, Dispatcher
 from pyrogram import Client
-from bot.helpers.logger import LOGGER
-from bot import fdl
-from bot import status
+from .helpers.logger import LOGGER
+from . import fdl
+from . import status
 
 LOGGER.info("Starting bot...")
 
