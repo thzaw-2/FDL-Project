@@ -10,8 +10,7 @@ from aiogram.enums import ParseMode
 from pyrogram.enums import ParseMode as SmartParseMode
 from pyrogram.types import Message as SmartMessage
 from pyrogram.enums import ChatMemberStatus
-# ဒီ line ကို ပြင်ပါ
-from .. import SmartPyro, bot, dp
+from . import SmartPyro, bot, dp
 from .helpers.utils import new_task
 from .helpers.botutils import send_message, delete_messages
 from .helpers.commands import BotCommands
