@@ -1,4 +1,3 @@
-# bot/helpers/buttons.py
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 class SmartButtons:
