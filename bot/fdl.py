@@ -22,7 +22,7 @@ from config import LOG_CHANNEL_ID
 
 logger = LOGGER
 
-BASE_URL = "https://fdlapi-ed9a85898ea5.herokuapp.com"
+BASE_URL = "https://fdl-api-server-production.up.railway.app"
 router = Router()
 
 async def get_file_properties(message: Message) -> tuple[str, int, str]:
