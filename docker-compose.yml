@@ -1,9 +1,16 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
-  telegram-bot:
+  bot:
     build: .
     restart: unless-stopped
     env_file:
       - .env
+    command: python3 bot/bot.py
+
+  api-server:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: gunicorn --bind 0.0.0.0:$PORT api_server/app:app
