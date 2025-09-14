@@ -1,13 +1,13 @@
-# bot.py
 import asyncio
 import os
 from aiogram import Bot, Dispatcher
 from pyrogram import Client
 from bot.helpers.logger import LOGGER
+from bot import fdl
+from bot import status
 
 LOGGER.info("Starting bot...")
 
-# Get credentials from environment variables
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -23,6 +23,8 @@ try:
     )
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
+    dp.include_router(fdl.router)
+    dp.include_router(status.router)
 except Exception as e:
     LOGGER.error(f"Error initializing bot: {e}")
     exit(1)
